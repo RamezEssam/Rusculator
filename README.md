@@ -1,4 +1,4 @@
-![Alt text](assets\ruscalculator-logo.jpg)
+![Alt text](assets/ruscalculator-logo.jpg)
 
 
 # 📐 Simple Expression Parsing Calculator
