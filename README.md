@@ -30,7 +30,7 @@ A simple and efficient expression parsing calculator that evaluates mathematical
 
    ```bash
    git clone https://github.com/RamezEssam/Rusculator
-   cd calculator
+   cd rusculator
    ```
 
 2. Build the project:
@@ -44,7 +44,7 @@ A simple and efficient expression parsing calculator that evaluates mathematical
 To run the calculator:
 
 ```bash
-cargo run
+cargo run --release
 ```
 
 You can then enter expressions like:
