@@ -3,15 +3,16 @@
 
 
 use std::collections::VecDeque;
+use std::sync::Arc;
 use regex::Regex;
-use eframe::egui;
-use egui::{Button, Label, RichText, TextEdit, Vec2};
+use eframe::egui::{self};
+use egui::{Button, IconData, Label, TextEdit, Vec2, ViewportBuilder};
 use egui::Visuals;
 use egui::FontFamily::Proportional;
 use egui::FontId;
-use egui::Layout;
-use egui::Align;
 use egui::TextStyle::{Monospace, Body, Small, Heading};
+use std::io::Cursor;
+use image::io::Reader as ImageReader;
 
 
 #[derive(Debug)]
@@ -158,10 +159,10 @@ impl eframe::App for Content {
             (Small, FontId::new(10.0, Proportional)),
         ]
         .into();
-        ctx.set_style(style);
-        
+        ctx.set_style(style);        
 
         egui::CentralPanel::default().show(ctx, |ui| {
+
             
             ui.add(
                 TextEdit::multiline(&mut self.text)
@@ -176,7 +177,7 @@ impl eframe::App for Content {
             );
 
 
-            let display = ui.add_sized(
+            let _ = ui.add_sized(
                 Vec2::new(ui.available_width(), ui.available_height()),
                 Label::new(self.answer.clone())
             );
@@ -193,11 +194,38 @@ impl eframe::App for Content {
 }
 
 
-fn main() -> eframe::Result {
-    let options = eframe::NativeOptions::default();
+fn main() -> eframe::Result<()> {
+
+    let logo_data = include_bytes!(r"..\assets\ruscalculator-logo.jpg");
+    let logo_image = ImageReader::new(Cursor::new(logo_data))
+        .with_guessed_format()
+        .unwrap()
+        .decode()
+        .unwrap()
+        .to_rgba8();
+
+    let (width, height) = logo_image.dimensions();
+    let pixels = logo_image.into_raw();
+
+
+
+    let options = eframe::NativeOptions {
+        viewport: ViewportBuilder {
+            icon: Some(Arc::new(
+                IconData {
+                    rgba: pixels,
+                    width: width,
+                    height: height,
+                }
+            )),
+            ..Default::default()
+        },
+        ..Default::default()
+    };
+
     eframe::run_native(
         "Rusculator",
         options,
-        Box::new(|_cc| Ok(Box::<Content>::default())),
+        Box::new(|_cc| Box::new(Content::default())),
     )
 }
