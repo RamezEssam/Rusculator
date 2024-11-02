@@ -38,6 +38,7 @@ A simple and efficient expression parsing calculator that evaluates mathematical
    ```bash
    cargo build --release
    ```
+   Note: rustc 1.75.0 (82e1608df 2023-12-21)
 
 ## Usage
 
