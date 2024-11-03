@@ -114,7 +114,7 @@ fn evaluate_rpn(queue: VecDeque<Token>) -> f64 {
         }
     }
 
-    stack.pop().unwrap()
+    stack.pop().unwrap_or(0.0)
 }
 
 

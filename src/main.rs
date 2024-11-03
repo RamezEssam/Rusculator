@@ -5,7 +5,7 @@ mod calculator;
 use std::collections::VecDeque;
 use std::sync::Arc;
 use eframe::egui::{self};
-use egui::{Button, IconData, Label, TextEdit, Vec2, ViewportBuilder};
+use egui::{Button, IconData, Key, Label, Modifiers, TextEdit, Vec2, ViewportBuilder, Ui};
 use egui::Visuals;
 use egui::FontFamily::Proportional;
 use egui::FontId;
@@ -19,6 +19,19 @@ use image::io::Reader as ImageReader;
 struct Content {
     text: String,
     answer: String,
+}
+
+
+fn is_enter_key_pressed(ui: &mut Ui) -> bool {
+    for event in &ui.ctx().input(|i| i.events.clone()) {
+        if let egui::Event::Key { key, ..} = event {
+            if *key == Key::Enter {
+                return true;
+            } 
+        }
+    }
+
+    false
 }
 
 impl eframe::App for Content {
@@ -41,12 +54,28 @@ impl eframe::App for Content {
         egui::CentralPanel::default().show(ctx, |ui| {
 
             
-            ui.add(
+            let edit_space = ui.add(
                 TextEdit::multiline(&mut self.text)
                         .desired_rows(10)
                         .desired_width(ctx.available_rect().width())
                         
             );
+
+            if edit_space.has_focus() {
+                for event in &ui.ctx().input(|i| i.events.clone()) {
+                    if let egui::Event::Key { key, modifiers, .. } = event {
+                        if *key == Key::Enter {
+                            if modifiers.contains(Modifiers::SHIFT) {
+                                // Add newline for Shift+Enter
+                                self.text.push('\n');
+                            }else {
+                                edit_space.request_focus();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
 
             let calc_button = ui.add_sized(
                 Vec2::new(ui.available_width(), 55.0),
@@ -60,7 +89,7 @@ impl eframe::App for Content {
             );
                 
 
-            if  calc_button.clicked(){
+            if  calc_button.clicked() || is_enter_key_pressed(ui){
                 if self.text.len() > 0 {
                     self.answer = calculator::calculate(&self.text)
                 }
